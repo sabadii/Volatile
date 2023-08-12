@@ -3,9 +3,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
-    public static AtomicInteger beautyWords3 = new AtomicInteger(0);
-    public static AtomicInteger beautyWords4 = new AtomicInteger(0);
-    public static AtomicInteger beautyWords5 = new AtomicInteger(0);
+    public static AtomicInteger length3 = new AtomicInteger(0);
+    public static AtomicInteger length4 = new AtomicInteger(0);
+    public static AtomicInteger length5 = new AtomicInteger(0);
 
     public static void main(String[] args) {
         Random random = new Random();
@@ -14,26 +14,45 @@ public class Main {
             texts[i] = generateText("abc", 3 + random.nextInt(3));
         }
 
-        Thread tread3 = new Thread(() -> countBeautyWords(texts, 3));
-        Thread tread4 = new Thread(() -> countBeautyWords(texts, 4));
-        Thread tread5 = new Thread(() -> countBeautyWords(texts, 5));
+        Thread palindrom = new Thread(() -> {
+            for (String text : texts) {
+                if (isPalindrom(text, texts.length)) {
+                    lengthCounter(texts);
+                }
+            }
+        });
 
-        tread3.start();
-        tread4.start();
-        tread5.start();
+        Thread sameLetters = new Thread(() -> {
+            for (String text : texts) {
+                if (isSameLetter(text)) {
+                    lengthCounter(texts);
+                }
+            }
+        });
+
+        Thread orderedLetters = new Thread(() -> {
+            for (String text : texts) {
+                if (isOrdered(text, texts.length)) {
+                    lengthCounter(texts);
+                }
+            }
+        });
+
+        palindrom.start();
+        sameLetters.start();
+        orderedLetters.start();
 
         try {
-            tread3.join();
-            tread4.join();
-            tread5.join();
+            palindrom.join();
+            sameLetters.join();
+            orderedLetters.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        System.out.println("Красивых слов с длиной 3: " + beautyWords3.get() + " шт.");
-        System.out.println("Красивых слов с длиной 4: " + beautyWords4.get() + " шт.");
-        System.out.println("Красивых слов с длиной 5: " + beautyWords5.get() + " шт.");
-
+        System.out.println("Красивых слов с длиной 3: " + length3.get() + " шт.");
+        System.out.println("Красивых слов с длиной 4: " + length4.get() + " шт.");
+        System.out.println("Красивых слов с длиной 5: " + length5.get() + " шт.");
     }
 
     public static String generateText(String letters, int length) {
@@ -43,34 +62,30 @@ public class Main {
             text.append(letters.charAt(random.nextInt(letters.length())));
         }
         return text.toString();
-
     }
 
-    public static void countBeautyWords(String[] texts, int length) {
+    public static void lengthCounter(String[] texts) {
         for (String text : texts) {
-            if (isBeauty(text, length)) {
-                if (length == 3) {
-                    beautyWords3.incrementAndGet();
-                } else if (length == 4) {
-                    beautyWords4.incrementAndGet();
-                } else if (length == 5) {
-                    beautyWords5.incrementAndGet();
-                }
-            }
+            if (text.length() == 3) length3.incrementAndGet();
+            else if (text.length() == 4) length4.incrementAndGet();
+            else if (text.length() == 5) length5.incrementAndGet();
         }
     }
 
-    public static boolean isBeauty(String text, int length) {
-        if (text.length() != length) {
-            return false;
-        }
-
+    public static boolean isPalindrom(String text, int length) {
         for (int i = 0; i < length / 2; i++) {
             if (text.charAt(i) != text.charAt(length - i - 1)) {
                 return false;
             }
         }
+        return true;
+    }
 
+    public static boolean isSameLetter(String text) {
+        return text.chars().allMatch(c -> c == text.charAt(0));
+    }
+
+    public static boolean isOrdered(String text, int length) {
         for (int i = 1; i < length; i++) {
             if (text.charAt(i) < text.charAt(i - 1)) {
                 return false;
@@ -78,4 +93,5 @@ public class Main {
         }
         return true;
     }
+
 }
