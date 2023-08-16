@@ -17,7 +17,7 @@ public class Main {
         Thread palindrom = new Thread(() -> {
             for (String text : texts) {
                 if (isPalindrom(text, texts.length)) {
-                    lengthCounter(texts);
+                    lengthCounter(text);
                 }
             }
         });
@@ -25,7 +25,7 @@ public class Main {
         Thread sameLetters = new Thread(() -> {
             for (String text : texts) {
                 if (isSameLetter(text)) {
-                    lengthCounter(texts);
+                    lengthCounter(text);
                 }
             }
         });
@@ -33,7 +33,7 @@ public class Main {
         Thread orderedLetters = new Thread(() -> {
             for (String text : texts) {
                 if (isOrdered(text, texts.length)) {
-                    lengthCounter(texts);
+                    lengthCounter(text);
                 }
             }
         });
@@ -64,13 +64,13 @@ public class Main {
         return text.toString();
     }
 
-    public static void lengthCounter(String[] texts) {
-        for (String text : texts) {
-            if (text.length() == 3) length3.incrementAndGet();
-            else if (text.length() == 4) length4.incrementAndGet();
-            else if (text.length() == 5) length5.incrementAndGet();
-        }
+    public static void lengthCounter(String text) {
+        int textLength = text.length();
+        if (textLength == 3) length3.incrementAndGet();
+        else if (textLength == 4) length4.incrementAndGet();
+        else if (textLength == 5) length5.incrementAndGet();
     }
+
 
     public static boolean isPalindrom(String text, int length) {
         for (int i = 0; i < length / 2; i++) {
